@@ -1,19 +1,12 @@
 ﻿using System;
-
-
-    namespace Rede_Estradas
+namespace Rede_Estradas
+{
+    class Program
     {
-    using System;
-
-    namespace Rede_Estradas
-    {
-        class Program
+        static void Main()
         {
-            static void Main()
-            {
-                Programa programa = new Programa();
-                programa.Executar();
-            }
+            Programa programa = new Programa();
+            programa.Executar();
         }
     }
 }
