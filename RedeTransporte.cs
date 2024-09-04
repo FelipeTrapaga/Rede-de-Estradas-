@@ -1,45 +1,64 @@
-﻿using System;
+﻿//IMPORTS SYSTEM ========== 
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Rede_Estradas
 {
-    using System;
-    using System.Collections.Generic;
 
     public class RedeTransporte
     {
         private Dictionary<Cidade, List<Rota>> mapaRotas;
+        private readonly int maxCidades;
+        private readonly int maxRotas;
+        private int rotasCriadas;
 
-        public RedeTransporte()
+        public RedeTransporte(int maxCidades, int maxRotas)
         {
+            this.maxCidades = maxCidades;
+            this.maxRotas = maxRotas;
             mapaRotas = new Dictionary<Cidade, List<Rota>>();
+            rotasCriadas = 0;
         }
 
         public void AdicionarCidade(Cidade cidade)
         {
-            if (!mapaRotas.ContainsKey(cidade))
+            if (mapaRotas.Count < maxCidades)
             {
-                mapaRotas[cidade] = new List<Rota>();
+                if (!mapaRotas.ContainsKey(cidade))
+                {
+                    mapaRotas[cidade] = new List<Rota>();
+                    Console.WriteLine($"Cidade {cidade.Nome} adicionada com sucesso!");
+                }
+                else
+                {
+                    Console.WriteLine("Cidade já existe na rede.");
+                }
             }
             else
             {
-                Console.WriteLine("Cidade já existe na rede.");
+                Console.WriteLine("Número máximo de cidades atingido.");
             }
         }
 
         public void AdicionarRota(Cidade origem, Cidade destino, int distancia)
         {
-            if (mapaRotas.ContainsKey(origem) && mapaRotas.ContainsKey(destino))
+            if (rotasCriadas < maxRotas)
             {
-                var rota = new Rota(origem, destino, distancia);
-                mapaRotas[origem].Add(rota);
+                if (mapaRotas.ContainsKey(origem) && mapaRotas.ContainsKey(destino))
+                {
+                    var rota = new Rota(origem, destino, distancia);
+                    mapaRotas[origem].Add(rota);
+                    rotasCriadas++;
+                    Console.WriteLine($"Rota adicionada: {origem.Nome} -> {destino.Nome}, Distância: {distancia} km");
+                }
+                else
+                {
+                    Console.WriteLine("Uma ou ambas as cidades não foram encontradas na rede.");
+                }
             }
             else
             {
-                Console.WriteLine("Uma ou ambas as cidades não foram encontradas na rede.");
+                Console.WriteLine("Número máximo de rotas atingido.");
             }
         }
 
@@ -64,12 +83,18 @@ namespace Rede_Estradas
         public void MostrarRede()
         {
             Console.WriteLine("Mapa da Rede de Transporte:");
+
             foreach (var cidade in mapaRotas)
             {
                 Console.WriteLine($"Cidade: {cidade.Key.Nome}");
-                foreach (var rota in cidade.Value)
+
+                if (cidade.Value.Count > 0)
                 {
-                    Console.WriteLine($"  Rota para {rota.Destino.Nome} - Distância: {rota.Distancia} km");
+                    Console.WriteLine("  Rotas:");
+                    foreach (var rota in cidade.Value)
+                    {
+                        Console.WriteLine($"    Destino: {rota.Destino.Nome} - Distância: {rota.Distancia} km");
+                    }
                 }
             }
         }

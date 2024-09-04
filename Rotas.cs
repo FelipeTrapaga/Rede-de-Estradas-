@@ -8,9 +8,9 @@ namespace Rede_Estradas
 {
     public class Rota
     {
-        public Cidade Origem { get; private set; }
-        public Cidade Destino { get; private set; }
-        public int Distancia { get; private set; }
+        public Cidade Origem { get; }
+        public Cidade Destino { get; }
+        public int Distancia { get; }
 
         public Rota(Cidade origem, Cidade destino, int distancia)
         {

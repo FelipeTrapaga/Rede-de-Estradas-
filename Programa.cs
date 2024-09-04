@@ -12,7 +12,13 @@ namespace Rede_Estradas
 
         public Programa()
         {
-            rede = new RedeTransporte();
+            Console.WriteLine("Digite o número máximo de cidades:");
+            int maxCidades = int.Parse(Console.ReadLine());
+
+            Console.WriteLine("Digite o número máximo de rotas:");
+            int maxRotas = int.Parse(Console.ReadLine());
+
+            rede = new RedeTransporte(maxCidades, maxRotas);
         }
 
         public void Executar()
@@ -35,9 +41,14 @@ namespace Rede_Estradas
                     case 1:
                         Console.Write("Digite o nome da cidade: ");
                         string nomeCidade = Console.ReadLine();
+                        while (string.IsNullOrEmpty(nomeCidade))
+                        {
+                            Console.Write("Digite o nome da cidade (não pode ser vazio): ");
+                            nomeCidade = Console.ReadLine();
+                        }
                         var cidade = new Cidade(nomeCidade);
                         rede.AdicionarCidade(cidade);
-                        Console.WriteLine("Cidade adicionada com sucesso!");
+
                         break;
 
                     case 2:
@@ -52,7 +63,6 @@ namespace Rede_Estradas
                         var cidadeDestino = new Cidade(destino);
 
                         rede.AdicionarRota(cidadeOrigem, cidadeDestino, distancia);
-                        Console.WriteLine("Rota adicionada com sucesso!");
                         break;
 
                     case 3:
