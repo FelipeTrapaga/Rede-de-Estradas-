@@ -61,25 +61,7 @@ namespace Rede_Estradas
                 Console.WriteLine("Número máximo de rotas atingido.");
             }
         }
-
-        public bool EhDigrafo()
-        {
-            foreach (var cidade in mapaRotas)
-            {
-                foreach (var rota in cidade.Value)
-                {
-                    var rotaInversa = mapaRotas.ContainsKey(rota.Destino) &&
-                                      mapaRotas[rota.Destino].Exists(r => r.Destino == rota.Origem);
-
-                    if (!rotaInversa)
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
+                                 
         public void MostrarRede()
         {
             Console.WriteLine("Mapa da Rede de Transporte:");
@@ -97,6 +79,84 @@ namespace Rede_Estradas
                     }
                 }
             }
+        }
+
+        public Cidade ConsultarCidade(string nomeCidade)
+        {
+            return mapaRotas.Keys.FirstOrDefault(cidade => cidade.Nome.Equals(nomeCidade, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public Rota ConsultarRota(Cidade origem, Cidade destino)
+        {
+            if (mapaRotas.ContainsKey(origem))
+            {
+                return mapaRotas[origem].FirstOrDefault(rota => rota.Destino.Equals(destino));
+            }
+            return null;
+        }
+
+        public List<Cidade> EncontrarCaminhoMaisCurto(Cidade origem, Cidade destino)
+        {
+            var distancias = new Dictionary<Cidade, int>();
+            var anteriores = new Dictionary<Cidade, Cidade>();
+            var naoVisitados = new List<Cidade>();
+
+            // Inicializar as distâncias e adicionar todas as cidades à lista de não visitados
+            foreach (var cidade in mapaRotas.Keys)
+            {
+                distancias[cidade] = int.MaxValue; // Começar com distâncias infinitas
+                anteriores[cidade] = null; // Nenhum caminho anterior inicialmente
+                naoVisitados.Add(cidade);
+            }
+
+            // A distância para a cidade de origem é 0
+            distancias[origem] = 0;
+
+            while (naoVisitados.Count > 0)
+            {
+                // Encontrar a cidade com a menor distância ainda não visitada
+                Cidade cidadeAtual = naoVisitados.OrderBy(cidade => distancias[cidade]).First();
+
+                // Se chegamos ao destino, paramos
+                if (cidadeAtual == destino)
+                {
+                    break;
+                }
+
+                naoVisitados.Remove(cidadeAtual);
+
+                // Atualizar as distâncias para os vizinhos da cidade atual
+                foreach (var rota in mapaRotas[cidadeAtual])
+                {
+                    Cidade vizinho = rota.Destino;
+                    if (naoVisitados.Contains(vizinho))
+                    {
+                        int distanciaPossivel = distancias[cidadeAtual] + rota.Distancia;
+                        if (distanciaPossivel < distancias[vizinho])
+                        {
+                            distancias[vizinho] = distanciaPossivel;
+                            anteriores[vizinho] = cidadeAtual; // Armazena o caminho anterior
+                        }
+                    }
+                }
+            }
+
+            // Reconstruir o caminho da cidade destino até a origem
+            var caminho = new List<Cidade>();
+            Cidade atual = destino;
+            while (atual != null)
+            {
+                caminho.Insert(0, atual); // Insere no início da lista para reverter a ordem
+                atual = anteriores[atual];
+            }
+
+            if (caminho.First() != origem)
+            {
+                Console.WriteLine("Nenhum caminho encontrado.");
+                return null;
+            }
+
+            return caminho;
         }
     }
 }

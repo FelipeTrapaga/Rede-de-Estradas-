@@ -8,7 +8,7 @@ namespace Rede_Estradas
 {
     public class Programa
     {
-        private RedeTransporte rede;
+        private readonly RedeTransporte rede;
 
         public Programa()
         {
@@ -31,8 +31,9 @@ namespace Rede_Estradas
                 Console.WriteLine("1. Adicionar Cidade");
                 Console.WriteLine("2. Adicionar Rota");
                 Console.WriteLine("3. Mostrar Rede de Transporte");
-                Console.WriteLine("4. Verificar se é um Dígrafo");
-                Console.WriteLine("5. Sair");
+                Console.WriteLine("4. Verificar se é um Dígrafo(Desativado)");
+                Console.WriteLine("5. Encontrar o Caminho mais Curto");
+                Console.WriteLine("6. Sair");
                 Console.Write("Escolha uma opção: ");
                 int opcao = int.Parse(Console.ReadLine());
 
@@ -70,11 +71,38 @@ namespace Rede_Estradas
                         break;
 
                     case 4:
-                        bool ehDigrafo = rede.EhDigrafo();
-                        Console.WriteLine(ehDigrafo ? "A rede é um dígrafo (rotas unidirecionais)." : "A rede é um grafo simples (rotas bidirecionais).");
+                        
+                        break;
+                    
+                    case 5:
+
+                        Console.Write("Digite o nome da cidade de origem: ");
+                        string nomeOrigem = Console.ReadLine();
+                        Console.Write("Digite o nome da cidade de destino: ");
+                        string nomeDestino = Console.ReadLine();
+
+                        var cidadeOrigemBusca = rede.ConsultarCidade(nomeOrigem);
+                        var cidadeDestinoBusca = rede.ConsultarCidade(nomeDestino);
+
+                        if (cidadeOrigemBusca != null && cidadeDestinoBusca != null)
+                        {
+                            var caminho = rede.EncontrarCaminhoMaisCurto(cidadeOrigemBusca, cidadeDestinoBusca);
+                            if (caminho != null)
+                            {
+                                Console.WriteLine("Caminho mais curto encontrado:");
+                                foreach (var cidade1 in caminho)
+                                {
+                                    Console.WriteLine(cidade1.Nome);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Cidades não encontradas.");
+                        }
                         break;
 
-                    case 5:
+                    case 6:
                         sair = true;
                         Console.WriteLine("Saindo...");
                         break;
