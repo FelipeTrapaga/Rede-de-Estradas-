@@ -7,11 +7,13 @@ namespace Rede_Estradas
 
     public class RedeTransporte
     {
+        // CONSTANTES ==========
         private Dictionary<Cidade, List<Rota>> mapaRotas;
         private readonly int maxCidades;
         private readonly int maxRotas;
         private int rotasCriadas;
 
+        // CONSTRUTOR ==========
         public RedeTransporte(int maxCidades, int maxRotas)
         {
             this.maxCidades = maxCidades;
@@ -20,6 +22,7 @@ namespace Rede_Estradas
             rotasCriadas = 0;
         }
 
+        // MÉTODOS ==========
         public void AdicionarCidade(Cidade cidade)
         {
             if (mapaRotas.Count < maxCidades)
@@ -61,7 +64,7 @@ namespace Rede_Estradas
                 Console.WriteLine("Número máximo de rotas atingido.");
             }
         }
-                                 
+
         public void MostrarRede()
         {
             Console.WriteLine("Mapa da Rede de Transporte:");
@@ -157,6 +160,149 @@ namespace Rede_Estradas
             }
 
             return caminho;
+        }
+
+        public void AtualizarCidade(string? cidadeAntiga, string? cidadeNova)
+        {
+            if (string.IsNullOrEmpty(cidadeAntiga) || string.IsNullOrEmpty(cidadeNova))
+            {
+                Console.WriteLine("Os nomes das cidades não podem ser vazios.");
+                return;
+            }
+
+            var cidadeAntigaObj = ConsultarCidade(cidadeAntiga);
+            if (cidadeAntigaObj != null)
+            {
+                cidadeAntigaObj.Nome = cidadeNova;
+                Console.WriteLine($"Cidade '{cidadeAntiga}' foi atualizada para '{cidadeNova}'.");
+            }
+            else
+            {
+                Console.WriteLine($"Cidade '{cidadeAntiga}' não encontrada.");
+            }
+        }
+
+        public void RemoverRota(string? origemRemover, string? destinoRemover)
+        {
+            if (string.IsNullOrEmpty(origemRemover) || string.IsNullOrEmpty(destinoRemover))
+            {
+                Console.WriteLine("Os nomes das cidades não podem ser vazios.");
+                return;
+            }
+
+            var origem = ConsultarCidade(origemRemover);
+            var destino = ConsultarCidade(destinoRemover);
+
+            if (origem != null && destino != null)
+            {
+                var rota = ConsultarRota(origem, destino);
+                if (rota != null)
+                {
+                    mapaRotas[origem].Remove(rota);
+                    Console.WriteLine($"Rota de '{origemRemover}' para '{destinoRemover}' foi removida.");
+                }
+                else
+                {
+                    Console.WriteLine("Rota não encontrada.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Uma ou ambas as cidades não foram encontradas.");
+            }
+        }
+
+        public void RemoverCidade(string? cidadeRemover)
+        {
+            if (string.IsNullOrEmpty(cidadeRemover))
+            {
+                Console.WriteLine("O nome da cidade não pode ser vazio.");
+                return;
+            }
+
+            var cidade = ConsultarCidade(cidadeRemover);
+            if (cidade != null)
+            {
+                // Remover a cidade do mapa de rotas
+                mapaRotas.Remove(cidade);
+
+                // Remover todas as rotas que têm esta cidade como destino
+                foreach (var cidadeOrigem in mapaRotas.Keys)
+                {
+                    mapaRotas[cidadeOrigem].RemoveAll(r => r.Destino == cidade);
+                }
+
+                Console.WriteLine($"Cidade '{cidadeRemover}' removida com sucesso.");
+            }
+            else
+            {
+                Console.WriteLine($"Cidade '{cidadeRemover}' não encontrada.");
+            }
+        }
+
+        public void AtualizarRota(string? origemAtualizar, string? destinoAtualizar, int novaDistancia)
+        {
+            if (string.IsNullOrEmpty(origemAtualizar) || string.IsNullOrEmpty(destinoAtualizar))
+            {
+                Console.WriteLine("Os nomes das cidades não podem ser vazios.");
+                return;
+            }
+
+            var origem = ConsultarCidade(origemAtualizar);
+            var destino = ConsultarCidade(destinoAtualizar);
+
+            if (origem != null && destino != null)
+            {
+                var rota = ConsultarRota(origem, destino);
+                if (rota != null)
+                {
+                    rota.Distancia = novaDistancia;
+                    Console.WriteLine($"A distância da rota de '{origemAtualizar}' para '{destinoAtualizar}' foi atualizada para {novaDistancia} km.");
+                }
+                else
+                {
+                    Console.WriteLine("Rota não encontrada.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Uma ou ambas as cidades não foram encontradas.");
+            }
+        }
+
+        public void ListarDadosGrafo()
+        {
+            bool digrafo = false;
+            bool valorado = false;
+            bool laco = false;
+
+            foreach (var cidade in mapaRotas)
+            {
+                foreach (var rota in cidade.Value)
+                {
+                    if (rota.Destino == cidade.Key)
+                    {
+                        laco = true;
+                    }
+                    if (rota.Distancia > 0)
+                    {
+                        valorado = true;
+                    }
+                    if (!mapaRotas[rota.Destino].Any(r => r.Destino == cidade.Key))
+                    {
+                        digrafo = true;
+                    }
+                }
+            }
+
+            Console.WriteLine($"É dígrafo: {digrafo}");
+            Console.WriteLine($"É valorado: {valorado}");
+            Console.WriteLine($"Tem laço: {laco}");
+
+            foreach (var cidade in mapaRotas)
+            {
+                Console.WriteLine($"Cidade {cidade.Key.Nome} tem grau {cidade.Value.Count}");
+            }
         }
     }
 }

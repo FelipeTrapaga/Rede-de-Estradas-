@@ -8,7 +8,7 @@ namespace Rede_Estradas
 {
     public class Cidade
     {
-        public string Nome { get; }
+        public string Nome { set; get; }
 
         public Cidade(string nome)
         {

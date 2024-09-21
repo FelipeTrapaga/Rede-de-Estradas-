@@ -31,9 +31,14 @@ namespace Rede_Estradas
                 Console.WriteLine("1. Adicionar Cidade");
                 Console.WriteLine("2. Adicionar Rota");
                 Console.WriteLine("3. Mostrar Rede de Transporte");
-                Console.WriteLine("4. Verificar se é um Dígrafo(Desativado)");
+                Console.WriteLine("4. Verificar se é um Dígrafo (Desativado)");
                 Console.WriteLine("5. Encontrar o Caminho mais Curto");
-                Console.WriteLine("6. Sair");
+                Console.WriteLine("6. Remover Cidade");
+                Console.WriteLine("7. Remover Rota");
+                Console.WriteLine("8. Atualizar Cidade");
+                Console.WriteLine("9. Atualizar Rota");
+                Console.WriteLine("10. Listar dados do grafo");
+                Console.WriteLine("11. Sair");
                 Console.Write("Escolha uma opção: ");
                 int opcao = int.Parse(Console.ReadLine());
 
@@ -47,20 +52,19 @@ namespace Rede_Estradas
                             Console.Write("Digite o nome da cidade (não pode ser vazio): ");
                             nomeCidade = Console.ReadLine();
                         }
-                        var cidade = new Cidade(nomeCidade);
+                        Cidade cidade = new Cidade(nomeCidade);
                         rede.AdicionarCidade(cidade);
-
                         break;
 
                     case 2:
                         Console.Write("Digite o nome da cidade de origem: ");
-                        string origem = Console.ReadLine();
+                        string origemCidade = Console.ReadLine();
                         Console.Write("Digite o nome da cidade de destino: ");
                         string destino = Console.ReadLine();
                         Console.Write("Digite a distância entre as cidades (em km): ");
                         int distancia = int.Parse(Console.ReadLine());
 
-                        var cidadeOrigem = new Cidade(origem);
+                        var cidadeOrigem = new Cidade(origemCidade);
                         var cidadeDestino = new Cidade(destino);
 
                         rede.AdicionarRota(cidadeOrigem, cidadeDestino, distancia);
@@ -71,38 +75,79 @@ namespace Rede_Estradas
                         break;
 
                     case 4:
-                        
+                        Console.WriteLine("Função de verificar Dígrafo ainda desativada.");
                         break;
-                    
+
                     case 5:
+                        Console.WriteLine("Digite a cidade de origem:");
+                        string origemInicio = Console.ReadLine();
 
-                        Console.Write("Digite o nome da cidade de origem: ");
-                        string nomeOrigem = Console.ReadLine();
-                        Console.Write("Digite o nome da cidade de destino: ");
-                        string nomeDestino = Console.ReadLine();
+                        Console.WriteLine("Digite a cidade de destino:");
+                        string destinoFinal = Console.ReadLine();
 
-                        var cidadeOrigemBusca = rede.ConsultarCidade(nomeOrigem);
-                        var cidadeDestinoBusca = rede.ConsultarCidade(nomeDestino);
+                        Cidade origemCidade1 = rede.ConsultarCidade(origemInicio);
+                        Cidade destinoCidade = rede.ConsultarCidade(destinoFinal);
 
-                        if (cidadeOrigemBusca != null && cidadeDestinoBusca != null)
+                        if (origemCidade1 != null && destinoCidade != null)
                         {
-                            var caminho = rede.EncontrarCaminhoMaisCurto(cidadeOrigemBusca, cidadeDestinoBusca);
-                            if (caminho != null)
+                            List<Cidade> caminho = rede.EncontrarCaminhoMaisCurto(origemCidade1, destinoCidade);
+
+                            if (caminho != null && caminho.Count > 0)
                             {
                                 Console.WriteLine("Caminho mais curto encontrado:");
-                                foreach (var cidade1 in caminho)
+                                foreach (var cidadeFirst in caminho)
                                 {
-                                    Console.WriteLine(cidade1.Nome);
+                                    Console.WriteLine(cidadeFirst.Nome);
                                 }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Nenhum caminho encontrado entre as cidades.");
                             }
                         }
                         else
                         {
-                            Console.WriteLine("Cidades não encontradas.");
+                            Console.WriteLine("Uma ou ambas as cidades não foram encontradas.");
                         }
                         break;
 
                     case 6:
+                        Console.Write("Digite o nome da cidade a remover: ");
+                        string cidadeRemover = Console.ReadLine();
+                        rede.RemoverCidade(cidadeRemover);
+                        break;
+
+                    case 7:
+                        Console.Write("Digite o nome da cidade de origem: ");
+                        string origemRemover = Console.ReadLine();
+                        Console.Write("Digite o nome da cidade de destino: ");
+                        string destinoRemover = Console.ReadLine();
+                        rede.RemoverRota(origemRemover, destinoRemover);
+                        break;
+
+                    case 8:
+                        Console.Write("Digite o nome da cidade que deseja atualizar: ");
+                        string cidadeAntiga = Console.ReadLine();
+                        Console.Write("Digite o novo nome da cidade: ");
+                        string cidadeNova = Console.ReadLine();
+                        rede.AtualizarCidade(cidadeAntiga, cidadeNova);
+                        break;
+
+                    case 9:
+                        Console.Write("Digite o nome da cidade de origem: ");
+                        string origemAtualizar = Console.ReadLine();
+                        Console.Write("Digite o nome da cidade de destino: ");
+                        string destinoAtualizar = Console.ReadLine();
+                        Console.Write("Digite a nova distância entre as cidades (em km): ");
+                        int novaDistancia = int.Parse(Console.ReadLine());
+                        rede.AtualizarRota(origemAtualizar, destinoAtualizar, novaDistancia);
+                        break;
+
+                    case 10:
+                        rede.ListarDadosGrafo();
+                        break;
+
+                    case 11:
                         sair = true;
                         Console.WriteLine("Saindo...");
                         break;
@@ -114,4 +159,4 @@ namespace Rede_Estradas
             }
         }
     }
-}
+ }

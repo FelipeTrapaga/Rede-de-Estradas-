@@ -10,7 +10,7 @@ namespace Rede_Estradas
     {
         public Cidade Origem { get; }
         public Cidade Destino { get; }
-        public int Distancia { get; }
+        public int Distancia { set; get; }
 
         public Rota(Cidade origem, Cidade destino, int distancia)
         {
