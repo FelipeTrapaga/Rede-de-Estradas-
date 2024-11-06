@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace Rede_Estradas
 {
-    public class Programa
+    public class Menu
     {
         private readonly RedeTransporte rede;
 
-        public Programa()
+        public Menu()
         {
             Console.WriteLine("Digite o número máximo de cidades:");
             int maxCidades = int.Parse(Console.ReadLine());
@@ -16,6 +16,23 @@ namespace Rede_Estradas
             int maxRotas = int.Parse(Console.ReadLine());
 
             rede = new RedeTransporte(maxCidades, maxRotas);
+        }
+
+        private void ExibirMenu()
+        {
+            Console.WriteLine("\nMenu:");
+            Console.WriteLine("1. Adicionar Cidade");
+            Console.WriteLine("2. Adicionar Rota");
+            Console.WriteLine("3. Mostrar Rede de Transporte");
+            Console.WriteLine("4. Encontrar o Caminho mais Curto");
+            Console.WriteLine("5. Remover Cidade");
+            Console.WriteLine("6. Remover Rota");
+            Console.WriteLine("7. Atualizar Cidade");
+            Console.WriteLine("8. Atualizar Rota");
+            Console.WriteLine("9. BuscaProfundidade");
+            Console.WriteLine("10. BuscaLargura");
+            Console.WriteLine("11. Sair");
+            Console.Write("Escolha uma opção: ");
         }
 
         public void Executar()
@@ -54,9 +71,14 @@ namespace Rede_Estradas
                         AtualizarRota();
                         break;
                     case 9:
-                       
+                        BuscaEmProfundidade();
                         break;
+
                     case 10:
+                        BuscaEmLargura();
+                        break;
+
+                    case 11:
                         sair = true;
                         Console.WriteLine("Saindo...");
                         break;
@@ -67,20 +89,26 @@ namespace Rede_Estradas
             }
         }
 
-        private void ExibirMenu()
+        private void BuscaEmLargura()
         {
-            Console.WriteLine("\nMenu:");
-            Console.WriteLine("1. Adicionar Cidade");
-            Console.WriteLine("2. Adicionar Rota");
-            Console.WriteLine("3. Mostrar Rede de Transporte");
-            Console.WriteLine("4. Encontrar o Caminho mais Curto");
-            Console.WriteLine("5. Remover Cidade");
-            Console.WriteLine("6. Remover Rota");
-            Console.WriteLine("7. Atualizar Cidade");
-            Console.WriteLine("8. Atualizar Rota");
-            Console.WriteLine("9. Listar dados do grafo");
-            Console.WriteLine("10. Sair");
-            Console.Write("Escolha uma opção: ");
+            Console.WriteLine("Qual a Cidade de Origem :");
+            string cidadeOrigem = Console.ReadLine();
+            Console.WriteLine("Qual a Cidade de Destini :");
+            string cidadeDestino = Console.ReadLine();
+            Cidade origem = rede.ConsultarCidade(cidadeOrigem);
+            Cidade destino = rede.ConsultarCidade(cidadeDestino);
+            rede.BuscaLargura(origem, destino);
+        }
+
+        private void BuscaEmProfundidade()
+        {
+            Console.WriteLine("Qual a Cidade de Origem :");
+            string cidadeOrigem = Console.ReadLine();
+            Console.WriteLine("Qual a Cidade de Destini :");
+            string cidadeDestino = Console.ReadLine();
+            Cidade origem = rede.ConsultarCidade(cidadeOrigem);
+            Cidade destino = rede.ConsultarCidade(cidadeDestino);
+            rede.BuscaProfundidade(origem, destino);
         }
 
         private void AdicionarCidade()

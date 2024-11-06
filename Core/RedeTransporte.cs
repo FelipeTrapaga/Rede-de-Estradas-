@@ -72,10 +72,11 @@ namespace Rede_Estradas
             if (rotasCriadas < maxRotas && mapaRotas.ContainsKey(origem) && mapaRotas.ContainsKey(destino))
             {
                 var rota = new Rota(origem, destino, distancia, tipoTransporte, tempoViagem);
-                rota.TempoViagem += gerenciadorEventos.AplicarImpactoAleatorio(); // Aplicando impacto do evento
+                //rota.TempoViagem += gerenciadorEventos.AplicarImpactoAleatorio(); // Aplicando impacto do evento
                 mapaRotas[origem].Add(rota);
                 rotasCriadas++;
-                Console.WriteLine($"Rota adicionada: {origem.Nome} -> {destino.Nome}, Distância: {distancia} km, Transporte: {tipoTransporte}, Tempo de Viagem: {tempoViagem} min");
+                Console.WriteLine($"Rota adicionada: {origem.Nome} -> {destino.Nome}, Distância: {distancia} km, Transporte: {tipoTransporte}, " +
+                    $"Tempo de Viagem: {tempoViagem} min");
             }
             else
             {
@@ -168,28 +169,47 @@ namespace Rede_Estradas
             }
         }
 
-        // Método de busca em profundidade (DFS)
-        public void BuscaProfundidade(Cidade origem)
+        // Método principal para busca em profundidade com destino
+        public void BuscaProfundidade(Cidade origem, Cidade destino)
         {
             var visitados = new HashSet<Cidade>();
-            DFS(origem, visitados);
-        }
-
-        private void DFS(Cidade cidade, HashSet<Cidade> visitados)
-        {
-            if (!visitados.Contains(cidade))
+            if (DFS(origem, destino, visitados))
             {
-                visitados.Add(cidade);
-                Console.WriteLine($"Visitando cidade: {cidade.Nome}");
-                foreach (var rota in mapaRotas[cidade])
-                {
-                    DFS(rota.Destino, visitados);
-                }
+                Console.WriteLine($"Cidade destino {destino.Nome} encontrada!");
+            }
+            else
+            {
+                Console.WriteLine($"Cidade destino {destino.Nome} não encontrada a partir de {origem.Nome}.");
             }
         }
 
+        // Método recursivo DFS com verificação de destino
+        private bool DFS(Cidade cidade, Cidade destino, HashSet<Cidade> visitados)
+        {
+            if (visitados.Contains(cidade))
+                return false;
+
+            visitados.Add(cidade);
+            Console.WriteLine($"Visitando cidade: {cidade.Nome}");
+
+            // Verifica se a cidade atual é o destino
+            if (cidade.Equals(destino))
+                return true;
+
+            // Chama DFS para cada cidade adjacente
+            foreach (var rota in mapaRotas[cidade])
+            {
+                if (DFS(rota.Destino, destino, visitados))
+                    return true; // Retorna true se o destino foi encontrado
+            }
+
+            // Retorna false se não achar o caminho até o destino
+            return false; 
+        }
+
+
         // Método de busca em largura (BFS)
-        public void BuscaLargura(Cidade origem)
+        public void BuscaLargura(Cidade origem, Cidade destino)
         {
             var visitados = new HashSet<Cidade>();
             var fila = new Queue<Cidade>();
@@ -203,6 +223,14 @@ namespace Rede_Estradas
                     visitados.Add(cidadeAtual);
                     Console.WriteLine($"Visitando cidade: {cidadeAtual.Nome}");
 
+                    // Verifica se a cidade atual é o destino
+                    if (cidadeAtual.Equals(destino))
+                    {
+                        Console.WriteLine($"Cidade destino {destino.Nome} encontrada!");
+                        return;
+                    }
+
+                    // Adiciona as cidades adjacentes na fila, se ainda não visitadas
                     foreach (var rota in mapaRotas[cidadeAtual])
                     {
                         if (!visitados.Contains(rota.Destino))
@@ -212,6 +240,8 @@ namespace Rede_Estradas
                     }
                 }
             }
+
+            Console.WriteLine($"Cidade destino {destino.Nome} não encontrada a partir de {origem.Nome}.");
         }
 
 
@@ -277,74 +307,6 @@ namespace Rede_Estradas
             }
 
             return caminho;
-        }
-
-        // Algoritmo de Floyd-Warshall para encontrar distâncias mínimas entre todas as cidades
-        public void FloydWarshall()
-        {
-            var cidades = mapaRotas.Keys.ToList();
-            var distancias = cidades.ToDictionary(cidade => cidade, cidade => cidades.ToDictionary(destino => destino, _ => int.MaxValue));
-
-            foreach (var cidade in cidades)
-            {
-                distancias[cidade][cidade] = 0;
-                foreach (var rota in mapaRotas[cidade])
-                {
-                    distancias[cidade][rota.Destino] = rota.Distancia;
-                }
-            }
-
-            foreach (var k in cidades)
-            {
-                foreach (var i in cidades)
-                {
-                    foreach (var j in cidades)
-                    {
-                        if (distancias[i][k] != int.MaxValue && distancias[k][j] != int.MaxValue &&
-                            distancias[i][j] > distancias[i][k] + distancias[k][j])
-                        {
-                            distancias[i][j] = distancias[i][k] + distancias[k][j];
-                        }
-                    }
-                }
-            }
-
-            Console.WriteLine("Menores distâncias entre todas as cidades:");
-            foreach (var i in cidades)
-            {
-                foreach (var j in cidades)
-                {
-                    Console.WriteLine($"Distância de {i.Nome} para {j.Nome}: {distancias[i][j]}");
-                }
-            }
-        }
-
-        // Algoritmo de Bellman-Ford para encontrar o menor caminho de uma cidade de origem
-        public void BellmanFord(Cidade origem)
-        {
-            var distancias = mapaRotas.Keys.ToDictionary(cidade => cidade, _ => int.MaxValue);
-            distancias[origem] = 0;
-
-            for (int i = 0; i < mapaRotas.Count - 1; i++)
-            {
-                foreach (var cidade in mapaRotas)
-                {
-                    foreach (var rota in cidade.Value)
-                    {
-                        if (distancias[cidade.Key] != int.MaxValue &&
-                            distancias[cidade.Key] + rota.Distancia < distancias[rota.Destino])
-                        {
-                            distancias[rota.Destino] = distancias[cidade.Key] + rota.Distancia;
-                        }
-                    }
-                }
-            }
-
-            Console.WriteLine($"Menores distâncias de {origem.Nome}:");
-            foreach (var cidade in distancias.Keys)
-            {
-                Console.WriteLine($"Distância para {cidade.Nome}: {distancias[cidade]}");
-            }
         }
     }
 }

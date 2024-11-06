@@ -5,7 +5,7 @@ namespace Rede_Estradas
     {
         static void Main()
         {
-            Programa programa = new Programa();
+            Menu programa = new Menu();
             programa.Executar();
         }
     }
