@@ -16,9 +16,51 @@ namespace Rede_Estradas
             int maxRotas = int.Parse(Console.ReadLine());
 
             rede = new RedeTransporte(maxCidades, maxRotas);
+            InicializarBase();
+        }
+        private void InicializarBase()
+        {
+            // Adiciona 10 cidades
+            string[] nomesCidades = { "Cidade1", "Cidade2", "Cidade3", "Cidade4", "Cidade5",
+                               "Cidade6", "Cidade7", "Cidade8", "Cidade9", "Cidade10" };
+
+            foreach (var nome in nomesCidades)
+            {
+                Cidade cidade = new Cidade(nome);
+                rede.AdicionarCidade(cidade);
+            }
+
+            // Adiciona rotas para preencher pelo menos 20% da matriz de adjacência
+            var rotas = new (string origem, string destino, int distancia, string transporte, int tempo)[]
+            {
+                ("Cidade1", "Cidade2", 10, "Carro", 15),
+                ("Cidade2", "Cidade3", 20, "Ônibus", 30),
+                ("Cidade3", "Cidade4", 25, "Trem", 40),
+                ("Cidade4", "Cidade5", 30, "Carro", 50),
+                ("Cidade5", "Cidade6", 35, "Ônibus", 60),
+                ("Cidade6", "Cidade7", 40, "Trem", 70),
+                ("Cidade7", "Cidade8", 45, "Carro", 80),
+                ("Cidade8", "Cidade9", 50, "Ônibus", 90),
+                ("Cidade9", "Cidade10", 55, "Trem", 100),
+                ("Cidade10", "Cidade1", 60, "Carro", 110),
+                ("Cidade2", "Cidade8", 70, "Ônibus", 120),
+                ("Cidade3", "Cidade7", 80, "Trem", 130),
+                ("Cidade4", "Cidade9", 90, "Carro", 140)
+            };
+
+            foreach (var (origem, destino, distancia, transporte, tempo) in rotas)
+            {
+                var cidadeOrigem = rede.ConsultarCidade(origem);
+                var cidadeDestino = rede.ConsultarCidade(destino);
+
+                if (cidadeOrigem != null && cidadeDestino != null)
+                {
+                    rede.AdicionarRota(cidadeOrigem, cidadeDestino, distancia, transporte, tempo);
+                }
+            }
         }
 
-        private void ExibirMenu()
+        private static void ExibirMenu()
         {
             Console.WriteLine("\nMenu:");
             Console.WriteLine("1. Adicionar Cidade");

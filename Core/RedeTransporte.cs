@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 
 namespace Rede_Estradas
 {
@@ -170,6 +171,13 @@ namespace Rede_Estradas
         }
 
         // Método principal para busca em profundidade com destino
+
+        //Explicação:
+        //O último nó inserido na pilha é o primeiro a ser removido.
+        //Ao explorar os vizinhos, o nó mais recente é tratado primeiro.
+        //LIFO
+        // A Tem vizinhos " B, C, D"
+        // A → D → C → B.
         public void BuscaProfundidade(Cidade origem, Cidade destino)
         {
             var visitados = new HashSet<Cidade>();
@@ -184,6 +192,7 @@ namespace Rede_Estradas
         }
 
         // Método recursivo DFS com verificação de destino
+       
         private bool DFS(Cidade cidade, Cidade destino, HashSet<Cidade> visitados)
         {
             if (visitados.Contains(cidade))
@@ -209,6 +218,16 @@ namespace Rede_Estradas
 
 
         // Método de busca em largura (BFS)
+        //Explicação :
+        //Como funciona :
+        //O primeiro nó inserido na fila é o primeiro a ser removido.
+        //Os nós vizinhos do nó atual são inseridos na fila na ordem em que são encontrados.
+        //Garanta que nós sejamos explorados camada por camada, a partir do nó inicial.
+        //FIFO 
+        //A com os vizinhos "B, C, D"
+        //A → B → C → D
+
+
         public void BuscaLargura(Cidade origem, Cidade destino)
         {
             var visitados = new HashSet<Cidade>();
